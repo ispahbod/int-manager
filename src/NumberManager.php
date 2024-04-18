@@ -6,12 +6,12 @@ use InvalidArgumentException;
 
 class NumberManager
 {
-    public static function convertToEnglishNumerals(string $input): string
+    public static function convertToEnglishNumerals(string $input): int
     {
         return strtr($input, ['۰' => '0', '۱' => '1', '۲' => '2', '۳' => '3', '۴' => '4', '۵' => '5', '۶' => '6', '۷' => '7', '۸' => '8', '۹' => '9']);
     }
 
-    public static function convertToPersianNumerals(string $input): string
+    public static function convertToPersianNumerals(string $input): int
     {
         return strtr($input, ['0' => '۰', '1' => '۱', '2' => '۲', '3' => '۳', '4' => '۴', '5' => '۵', '6' => '۶', '7' => '۷', '8' => '۸', '9' => '۹']);
     }
@@ -44,14 +44,14 @@ class NumberManager
         if ($maxNumberOfDigits === null || $maxNumberOfDigits < $minNumberOfDigits) {
             $maxNumberOfDigits = $minNumberOfDigits;
         }
-        $min = pow(10, $minNumberOfDigits - 1);
-        $max = pow(10, $maxNumberOfDigits) - 1;
+        $min = 10 ** ($minNumberOfDigits - 1);
+        $max = (10 ** $maxNumberOfDigits) - 1;
 
-        $length = mt_rand($minNumberOfDigits, $maxNumberOfDigits);
-        $minAdjusted = pow(10, $length - 1);
-        $maxAdjusted = pow(10, $length) - 1;
+        $length = random_int($minNumberOfDigits, $maxNumberOfDigits);
+        $minAdjusted = 10 ** ($length - 1);
+        $maxAdjusted = (10 ** $length) - 1;
 
-        return mt_rand($minAdjusted, $maxAdjusted);
+        return random_int($minAdjusted, $maxAdjusted);
     }
 
     public static function isGreaterThan(int $input, int $number): bool
@@ -109,7 +109,7 @@ class NumberManager
 
     public static function raiseToPower(int $input, int $exponent): int
     {
-        return pow($input, $exponent);
+        return $input ** $exponent;
     }
 
     public static function modulo(int $input, int $modulus): int
@@ -138,7 +138,9 @@ class NumberManager
     {
         if ($number >= 1000 && $number < 1000000) {
             return round($number / 1000, $precision) . 'K';
-        } elseif ($number >= 1000000) {
+        }
+
+        if ($number >= 1000000) {
             return round($number / 1000000, $precision) . 'M';
         }
         return (string)$number;
@@ -153,9 +155,13 @@ class NumberManager
     {
         if ($size < 1024) {
             return $size . ' B';
-        } elseif ($size < 1048576) {
+        }
+
+        if ($size < 1048576) {
             return round($size / 1024, $precision) . ' KB';
-        } elseif ($size < 1073741824) {
+        }
+
+        if ($size < 1073741824) {
             return round($size / 1048576, $precision) . ' MB';
         }
         return round($size / 1073741824, $precision) . ' GB';
@@ -177,5 +183,14 @@ class NumberManager
         preg_match_all('/\d+/', $input, $matches);
         return empty($matches[0]) ? null : end($matches[0]);
     }
-
+    public static function generateOTP(): int
+    {
+        $otp = '';
+        for ($i = 0; $i < 3; $i++) {
+            $pairStart = random_int(1, 9);
+            $pair = $pairStart . random_int(0, 9);
+            $otp .= $pair;
+        }
+        return (int)$otp;
+    }
 }
